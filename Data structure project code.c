@@ -89,20 +89,20 @@ void addSong(char name[], int position)
     }
 
     Song* newSong = createSong(name);
-    if (!currentPlaylist->head || position == 1)   // Beginning
+    if (!currentPlaylist->head || position == 1)
     {
         newSong->next = currentPlaylist->head;
         if (currentPlaylist->head) currentPlaylist->head->prev = newSong;
         currentPlaylist->head = newSong;
     }
-    else if (position == -1)     // End
+    else if (position == -1)
     {
         Song* temp = currentPlaylist->head;
         while (temp->next) temp = temp->next;
         temp->next = newSong;
         newSong->prev = temp;
     }
-    else     // Middle
+    else
     {
         Song* temp = currentPlaylist->head;
         int i = 1;
@@ -440,28 +440,21 @@ void menu()
         printCenter("╚════════════════════════════════════════════════════════════════════════════╝");
         printLine();
 
-
-        int boxWidth = 30;
+       int boxWidth = 36;
         int boxPadding = (SCREEN_WIDTH - boxWidth) / 2;
+        for (int i = 0; i < boxPadding; i++) printf(" ");
+        printf("╔══════════════════════════════════╗\n");
 
         for (int i = 0; i < boxPadding; i++) printf(" ");
-        printf("╔");
-        for (int i = 0; i < boxWidth - 2; i++) printf("═");
-        printf("╗\n");
-
-        for (int i = 0; i < boxPadding; i++) printf(" ");
-        printf("║        Enter your choice:          ║\n");
-
-        for (int i = 0; i < boxPadding; i++) printf(" ");
-        printf("╚");
-        for (int i = 0; i < boxWidth - 2; i++) printf("═");
-        printf("╝\n");
-
-        printf("\n");
-        printf(">> ");
+        printf("║  Enter your choice: ");
         scanf("%d", &choice);
         getchar();
+        printf("                                                               ║\n");
 
+        for (int i = 0; i < boxPadding; i++) printf(" ");
+        printf("╚══════════════════════════════════╝\n");
+
+        printf("\n");
         switch (choice)
         {
         case 1:
