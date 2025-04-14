@@ -1,4 +1,4 @@
-<<<<<<< Updated upstream
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -417,25 +417,48 @@ void menu()
     {
         printf("\n");
         printLine();
-        printCenter("MUSIC PLAYLIST ORGANIZER");
+        printCenter("╔════════════════════════════════════════════════════════════════════════════╗");
+        printCenter("║                                                                            ║");
+        printCenter("║                  🎶 WELCOME TO MUSIC PLAYLIST ORGANIZER 🎶                 ║");
+        printCenter("║                                                                            ║");
+        printCenter("╠════════════════════════════════════════════════════════════════════════════╣");
+        printCenter("║ 1️⃣  Create Playlist                                                       ║");
+        printCenter("║ 2️⃣  Switch Playlist                                                       ║");
+        printCenter("║ 3️⃣  Add Song                                                              ║");
+        printCenter("║ 4️⃣  Remove Song                                                           ║");
+        printCenter("║ 5️⃣  Display Playlist                                                      ║");
+        printCenter("║ 6️⃣  Sort Playlist                                                         ║");
+        printCenter("║ 7️⃣  Shuffle Playlist                                                      ║");
+        printCenter("║ 8️⃣  Play Previous Song                                                    ║");
+        printCenter("║ 9️⃣  Play Next Song                                                        ║");
+        printCenter("║ 🔟  Search Song                                                            ║");
+        printCenter("║ 1️⃣1️⃣ Get Total Info                                                      ║");
+        printCenter("║ 1️⃣2️⃣ Clear Playlist                                                      ║");
+        printCenter("║ 1️⃣3️⃣ Save Playlist                                                       ║");
+        printCenter("║ 1️⃣4️⃣ Load Playlist                                                       ║");
+        printCenter("║ 1️⃣5️⃣ Exit                                                                ║");
+        printCenter("╚════════════════════════════════════════════════════════════════════════════╝");
         printLine();
-        printCenter("1. Create Playlist");
-        printCenter("2. Switch Playlist");
-        printCenter("3. Add Song");
-        printCenter("4. Remove Song");
-        printCenter("5. Display Playlist");
-        printCenter("6. Sort Playlist");
-        printCenter("7. Shuffle Playlist");
-        printCenter("8. Play Previous Song");
-        printCenter("9. Play Next Song");
-        printCenter("10. Search Song");
-        printCenter("11. Get Total Info");
-        printCenter("12. Clear Playlist");
-        printCenter("13. Save Playlist");
-        printCenter("14. Load Playlist");
-        printCenter("15. Exit");
-        printLine();
-        printf("Enter choice: ");
+
+
+        int boxWidth = 30;
+        int boxPadding = (SCREEN_WIDTH - boxWidth) / 2;
+
+        for (int i = 0; i < boxPadding; i++) printf(" ");
+        printf("╔");
+        for (int i = 0; i < boxWidth - 2; i++) printf("═");
+        printf("╗\n");
+
+        for (int i = 0; i < boxPadding; i++) printf(" ");
+        printf("║        Enter your choice:          ║\n");
+
+        for (int i = 0; i < boxPadding; i++) printf(" ");
+        printf("╚");
+        for (int i = 0; i < boxWidth - 2; i++) printf("═");
+        printf("╝\n");
+
+        printf("\n");
+        printf(">> ");
         scanf("%d", &choice);
         getchar();
 
@@ -513,8 +536,6 @@ int main()
 {
     loadPlaylist();
     menu();
+
     return 0;
 }
-=======
->>>>>>> Stashed changes
-
