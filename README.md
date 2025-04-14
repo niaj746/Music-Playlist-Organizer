@@ -88,6 +88,7 @@ void addSong(char name[], int position)
         return;
     }
 
+
     Song* newSong = createSong(name);
     if (!currentPlaylist->head || position == 1)   // Beginning
     {
