@@ -153,34 +153,81 @@ void removeSong(char name[])
 
 void playNext(Song** current)
 {
-    if (!(*current) || !(*current)->next)
+     if (currentPlaylist == NULL || currentPlaylist->head == NULL)
     {
-        printCenter("No next song!");
+        printCenter("No songs available to play.\n");
         return;
     }
-    (*current) = (*current)->next;
-    (*current)->playCount++;
-    printf("\n");
-    printCenter("Now Playing");
-    printf("\n");
-    printCenter((*current)->name);
+
+    if (currentPlaylist->currentlyPlaying == NULL)
+    {
+        currentPlaylist->currentlyPlaying = currentPlaylist->head;
+    }
+    else if (currentPlaylist->currentlyPlaying->next != NULL)
+    {
+        currentPlaylist->currentlyPlaying = currentPlaylist->currentlyPlaying->next;
+    }
+    else
+    {
+        printCenter("You're at the last song.\n");
+        return;
 }
+
+  currentPlaylist->currentlyPlaying->playCount++;
+    char buffer[150];
+    sprintf(buffer, " Now Playing: %s | Play Count: %d 🎶", currentPlaylist->currentlyPlaying->name, currentPlaylist->currentlyPlaying->playCount);
+    printCenter(buffer);
 
 
 void playPrevious(Song** current)
 {
-    if (!(*current) || !(*current)->prev)
+
+    if (currentPlaylist == NULL || currentPlaylist->head == NULL)
     {
-        printCenter("No previous song!");
+        printCenter("No songs available to play.\n");
         return;
     }
-    (*current) = (*current)->prev;
-    (*current)->playCount++;
-    printf("\n");
-    printCenter("Now Playing");
-    printf("\n");
-    printCenter((*current)->name);
+
+    if (currentPlaylist->currentlyPlaying == NULL)
+    {
+        currentPlaylist->currentlyPlaying = currentPlaylist->head;
+        printCenter("Starting from the first song.");
+    }
+    else if (currentPlaylist->currentlyPlaying->prev != NULL)
+    {
+        currentPlaylist->currentlyPlaying = currentPlaylist->currentlyPlaying->prev;
+    }
+    else
+    {
+        printCenter("You're at the first song.\n");
+        return;
+    }
+
+   currentPlaylist->currentlyPlaying->playCount++;
+    char buffer[150];
+    sprintf(buffer, " Now Playing: %s | Play Count: %d 🎶", currentPlaylist->currentlyPlaying->name, currentPlaylist->currentlyPlaying->playCount);
+    printCenter(buffer);
+
 }
+
+void switchPlaylist(char name[])
+{
+    Playlist* temp = playlists;
+    while (temp != NULL)
+    {
+        if (strcmp(temp->name, name) == 0)
+        {
+            currentPlaylist = temp;
+            if (currentPlaylist->head != NULL)
+                currentPlaylist->currentlyPlaying = currentPlaylist->head; // Reset on switch
+            printCenter("Switched playlist successfully.");
+            return;
+        }
+        temp = temp->next;
+    }
+    printCenter("Playlist not found.");
+}
+
 
 void displayPlaylist()
 {
@@ -376,35 +423,79 @@ void savePlaylist()
     printCenter("Playlist saved successfully!");
 }
 
-void loadPlaylist()
+void loadPlaylists()
 {
-    FILE* file = fopen(FILENAME, "r");
-    if (!file)
+    FILE* file = fopen("playlists.txt", "r");
+    if (file == NULL)
     {
-        printCenter("No saved playlist found!");
+        printCenter("No saved playlists found.");
         return;
     }
 
-    char line[256];
-    char playlistName[MAX_NAME_LENGTH];
-    char songName[MAX_NAME_LENGTH];
-    int playCount;
+    char line[MAX_NAME_LENGTH * 4];
+    Playlist* lastPlaylist = NULL;
+    currentPlaylist = NULL;
 
     while (fgets(line, sizeof(line), file))
     {
-        if (sscanf(line, "Playlist: %s", playlistName) == 1)
+        line[strcspn(line, "\n")] = '\0';
+
+        if (strncmp(line, "Playlist:", 9) == 0)
         {
-            createPlaylist(playlistName);
+            char playlistName[MAX_NAME_LENGTH];
+            sscanf(line, "Playlist: %[^\n]", playlistName);
+
+            Playlist* newPlaylist = (Playlist*)malloc(sizeof(Playlist));
+            strcpy(newPlaylist->name, playlistName);
+            newPlaylist->head = NULL;
+            newPlaylist->currentlyPlaying = NULL;
+            newPlaylist->next = NULL;
+
+            if (playlists == NULL)
+            {
+                playlists = newPlaylist;
+            }
+            else
+            {
+                lastPlaylist->next = newPlaylist;
+            }
+
+            lastPlaylist = newPlaylist;
+            currentPlaylist = newPlaylist;
         }
-        else if (sscanf(line, "Song: %s | Played: %d", songName, &playCount) == 2)
+        else if (strlen(line) > 0)
         {
-            addSong(songName, -1);
-            currentPlaylist->head->playCount = playCount;
+
+            char name[MAX_NAME_LENGTH], artist[MAX_NAME_LENGTH], duration[MAX_NAME_LENGTH], genre[MAX_NAME_LENGTH];
+            int playCount;
+            sscanf(line, "%[^|]|%[^|]|%[^|]|%[^|]|%d", name, artist, duration, genre, &playCount);
+
+            Song* newSong = (Song*)malloc(sizeof(Song));
+            strcpy(newSong->name, name);
+            strcpy(newSong->artist, artist);
+            strcpy(newSong->duration, duration);
+            strcpy(newSong->genre, genre);
+            newSong->playCount = playCount;
+            newSong->next = newSong->prev = NULL;
+
+            if (currentPlaylist->head == NULL)
+            {
+                currentPlaylist->head = newSong;
+                currentPlaylist->currentlyPlaying = newSong;
+            }
+            else
+            {
+                Song* temp = currentPlaylist->head;
+                while (temp->next != NULL)
+                    temp = temp->next;
+                temp->next = newSong;
+                newSong->prev = temp;
+            }
         }
     }
 
     fclose(file);
-    printCenter("Playlist loaded successfully!");
+    printCenter(" Playlists loaded successfully.");
 }
 
 
@@ -419,7 +510,7 @@ void menu()
         printLine();
         printCenter("╔════════════════════════════════════════════════════════════════════════════╗");
         printCenter("║                                                                            ║");
-        printCenter("║                  🎶 WELCOME TO MUSIC PLAYLIST ORGANIZER 🎶                 ║");
+        printCenter("║                   WELCOME TO MUSIC PLAYLIST ORGANIZER                  ║");
         printCenter("║                                                                            ║");
         printCenter("╠════════════════════════════════════════════════════════════════════════════╣");
         printCenter("║ 1️.Create Playlist                                                          ║");
